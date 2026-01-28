@@ -113,7 +113,7 @@ export default async function HomePage() {
                 Learn More
               </Link>
             </div>
-
+        
             <div className="mt-6 grid grid-cols-3 gap-4 text-center">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="text-2xl font-bold">1×</div>
@@ -129,7 +129,7 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
-
+          
           {/* Hero card */}
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30">
             <div className="flex items-start justify-between gap-4">
@@ -173,6 +173,17 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      {/* Single image (no card), smaller and right-aligned */}
+      <div className="flex justify-center px-6 pb-10">
+      <div className="overflow-hidden rounded-2xl border border-white/10 shadow-lg shadow-black/30 md:w-1/3">
+        <img
+          src="/gallery/gold_us.png"
+          alt="Brevard Coin Club meeting"
+          className="h-40 md:h-48 w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      </div>
 
       {/* Features */}
       <section id="about" className="mx-auto max-w-6xl px-6 py-10">
@@ -209,7 +220,7 @@ export default async function HomePage() {
           />
         </div>
       </section>
-
+             
       {/* Join */}
       <section id="join" className="mx-auto max-w-6xl px-6 py-12">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10">
