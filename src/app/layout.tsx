@@ -23,12 +23,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      style={{
+        backgroundImage:
+          'linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.70)), url("/textures/brushed-metal.png")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen text-white`}
+        style={{ background: "transparent" }}
       >
         {children}
       </body>
     </html>
   );
 }
+
