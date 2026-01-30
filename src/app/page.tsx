@@ -175,11 +175,11 @@ export default async function HomePage() {
       </section>
       {/* Single image (no card), smaller and right-aligned */}
       <div className="flex justify-center px-6 pb-10">
-      <div className="overflow-hidden rounded-2xl border border-white/10 shadow-lg shadow-black/30 md:w-1/3">
+      <div className="overflow-hidden rounded-3xl w-full max-w-4xl">
         <img
           src="/gallery/gold_us.png"
           alt="Brevard Coin Club meeting"
-          className="h-40 md:h-48 w-full object-cover"
+           className="h-48 md:h-56 w-full object-cover"
           loading="lazy"
         />
       </div>
@@ -203,7 +203,7 @@ export default async function HomePage() {
           <FeatureCard
             title="Newsletters"
             desc="Open the current club newsletter (PDF)."
-            href="/newsletters/January_2026.pdf"
+            href="/newsletters/February_2026.pdf"
             emoji="📰"
           />
           <FeatureCard
@@ -238,7 +238,7 @@ export default async function HomePage() {
               Find the Next Meeting
             </Link>
             <Link
-              href="#"
+              href="/contactForm"
               className="rounded-xl border border-white/15 px-5 py-3 text-sm text-zinc-100 hover:bg-white/10"
             >
               Contact the Club
