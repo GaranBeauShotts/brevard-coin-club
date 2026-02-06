@@ -7,10 +7,10 @@ function isNonEmptyString(v: unknown) {
 
 export async function GET(
   _req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = params;
 
     const { data, error } = await supabase
       .from("classifieds")
@@ -19,25 +19,26 @@ export async function GET(
       .single();
 
     if (error) {
-      // Supabase returns an error when .single() finds no row
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     return NextResponse.json(data, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(
   req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = params;
     const body = await req.json();
 
-    // Allow partial updates, but enforce required fields if provided
     const update: any = {};
 
     if (body?.title !== undefined) {
@@ -67,7 +68,6 @@ export async function PUT(
     if (body?.contact_email !== undefined)
       update.contact_email = body.contact_email ? String(body.contact_email) : null;
 
-    // If no fields provided
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ error: "No fields to update." }, { status: 400 });
     }
@@ -85,18 +85,20 @@ export async function PUT(
 
     return NextResponse.json(data, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(
   _req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = params;
 
-    // First delete, then return something useful
     const { data, error } = await supabase
       .from("classifieds")
       .delete()
@@ -110,6 +112,9 @@ export async function DELETE(
 
     return NextResponse.json({ deleted: true, record: data }, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }
