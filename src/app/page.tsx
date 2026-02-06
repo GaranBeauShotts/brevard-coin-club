@@ -215,9 +215,9 @@ export default async function HomePage() {
           <FeatureCard
             title="Classifieds"
             desc="Moderated buy/sell/trade listings for members and local collectors."
-            href="#"
+            href="/classifieds"
             emoji="🏷️"
-          />
+/>
         </div>
       </section>
              
