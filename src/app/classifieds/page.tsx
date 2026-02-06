@@ -165,7 +165,7 @@ export default function ClassifiedsPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold">🏷️ Classifieds</h1>
           <p className="mt-1 text-white/70">
-            Post, browse, edit, and delete listings (Week 4 core feature CRUD).
+            Post, browse, edit, and delete listings .
           </p>
         </div>
 
