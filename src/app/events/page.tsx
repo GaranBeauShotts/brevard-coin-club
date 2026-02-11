@@ -37,9 +37,13 @@ export default async function EventsPage() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-3xl font-bold">Upcoming Events</h1>
-          <Link className="text-sm text-zinc-300 hover:text-white" href="/">
+          <Link
+            href="/"
+            className="h-9 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 transition"
+          >
             ← Back home
           </Link>
+
         </div>
 
         {error && (
