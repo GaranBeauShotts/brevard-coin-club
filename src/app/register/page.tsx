@@ -95,7 +95,7 @@ export default function RegisterPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="Garan Beau Shotts"
+              placeholder="Your Name (as you want it to appear on your profile)"
               autoComplete="name"
             />
           </div>
@@ -106,7 +106,7 @@ export default function RegisterPage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="Melbourne, FL"
+              placeholder="your mailing address"
               autoComplete="address-level2"
             />
             <p className="mt-1 text-xs text-white/50">
