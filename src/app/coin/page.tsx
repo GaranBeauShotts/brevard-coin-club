@@ -14,9 +14,21 @@ export default function CoinPage() {
   const [denomination, setDenomination] = useState("");
   const [grade, setGrade] = useState("Raw");
 
+  // NEW: comps search phrase
+  const [query, setQuery] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ai, setAi] = useState<AiResult | null>(null);
+
+  const soldUrl = query.trim()
+    ? `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query.trim())}&LH_Sold=1&LH_Complete=1`
+    : null;
+
+  function fillCompQuery() {
+    const parts = [year, country, denomination, grade].filter(Boolean);
+    setQuery(parts.join(" ").trim());
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,7 +72,7 @@ export default function CoinPage() {
   }
 
   return (
-    <main className="mx-auto max-w-xl p-6">
+    <main className="mx-auto max-w-xl p-6 text-white">
       <h1 className="text-2xl font-bold mb-4">Coin Value Helper</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -125,6 +137,48 @@ export default function CoinPage() {
         >
           {loading ? "Explaining..." : "Get Value Estimate"}
         </button>
+
+        {/* NEW: Sold comps helper */}
+        <div className="mt-4 space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <label className="text-sm text-white/80">Search phrase for sold comps</label>
+            <button
+              type="button"
+              onClick={fillCompQuery}
+              className="h-8 inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs hover:bg-white/10 transition"
+              title="Use the fields above to build a search"
+            >
+              Auto-fill
+            </button>
+          </div>
+
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Example: 1881-S Morgan Dollar PCGS MS63'
+            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+          />
+
+          <a
+            href={soldUrl ?? "#"}
+            target="_blank"
+            rel="noreferrer"
+            className={`h-10 inline-flex items-center justify-center rounded-xl px-4 text-sm font-semibold transition ${
+              soldUrl
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-white/10 text-white/40 cursor-not-allowed"
+            }`}
+            onClick={(e) => {
+              if (!soldUrl) e.preventDefault();
+            }}
+          >
+            View Sold Comps on eBay
+          </a>
+
+          <p className="text-xs text-white/50">
+            Tip: Include date + mint + grade. Example: “1881-S Morgan Dollar MS63”.
+          </p>
+        </div>
       </form>
 
       <div className="mt-6">

@@ -166,7 +166,7 @@ export default async function HomePage() {
           <FeatureCard
             title="Coin Value Helper"
             desc="An educational estimator with trusted references and disclaimers."
-            href="#"
+            href="/coin"
             emoji="🧭"
           />
           <FeatureCard
