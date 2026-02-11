@@ -1,45 +1,73 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function RegisterPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="p-8 border rounded-xl w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4">Create Account</h1>
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-        <form className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border p-2 rounded"
-          />
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full border p-2 rounded"
-          />
+    const { error } = await supabase.auth.signUp({ email, password });
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white p-2 rounded"
-          >
-            Register
-          </button>
-        </form>
+    setLoading(false);
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?
-          </p>
+    if (error) return alert(error.message);
 
-          <Link
-            href="/login"
-            className="inline-block mt-2 text-blue-600 hover:underline font-medium"
-          >
-            Back to Login
-          </Link>
-        </div>
+    alert("Account created! Now log in.");
+    router.push("/login");
+  }
+
+ return (
+  <main className="mx-auto max-w-6xl px-6 py-16">
+    <div className="mx-auto max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30">
+      <h1 className="text-2xl font-bold mb-6 text-center text-zinc-100">
+        Create Account
+      </h1>
+
+      <form onSubmit={handleRegister} className="space-y-4">
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full rounded-xl border border-white/10 bg-zinc-950/40 p-3 text-sm text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/20"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full rounded-xl border border-white/10 bg-zinc-950/40 p-3 text-sm text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/20"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-200 disabled:opacity-60"
+        >
+          {loading ? "Creating..." : "Register"}
+        </button>
+      </form>
+
+      <div className="mt-6 text-center text-sm text-zinc-400">
+        Already have an account?{" "}
+        <Link href="/login" className="text-white hover:underline font-medium">
+          Back to Login
+        </Link>
       </div>
     </div>
-  );
+  </main>
+);
+
 }
