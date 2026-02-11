@@ -78,10 +78,11 @@ export default async function HomePage() {
             </Link>
             <Link
              href="/login"
-             className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+               className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
-              Login
+                Login
             </Link>
+
 
           </div>
         </div>
