@@ -54,6 +54,17 @@ function openEbaySoldComps(searchPhrase: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
+async function safeJson<T = any>(res: Response): Promise<T | null> {
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    // Return something useful for debugging
+    throw new Error(`Endpoint returned non-JSON (status ${res.status}).`);
+  }
+}
+
 export default function CoinPage() {
   const [year, setYear] = useState("");
   const [country, setCountry] = useState("");
@@ -65,12 +76,11 @@ export default function CoinPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ai, setAi] = useState<AiResult | null>(null);
-
-  // ✅ comps state belongs here (top-level)
   const [comps, setComps] = useState<CompsResult | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
     setError(null);
     setAi(null);
@@ -91,21 +101,21 @@ export default function CoinPage() {
 
     try {
       // 1) Explain
-      const res = await fetch("/api/coin/explain", {
+      const explainRes = await fetch("/api/coin/explain", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const explainData = await safeJson<AiResult & { error?: string }>(
+        explainRes
+      );
 
-      if (!res.ok) {
-        setError(data?.error ?? "Request failed");
-        console.error("Explain error:", data);
-        return;
+      if (!explainRes.ok) {
+        throw new Error(explainData?.error || "Explain request failed");
       }
 
-      setAi(data);
+      setAi(explainData as AiResult);
 
       // 2) Comps
       if (compPhrase) {
@@ -115,30 +125,28 @@ export default function CoinPage() {
           body: JSON.stringify({ query: compPhrase }),
         });
 
-        const text = await compRes.text();
+        // comps endpoint might sometimes return non-JSON; handle gracefully
+        const compText = await compRes.text();
         let compData: any = null;
 
         try {
-          compData = text ? JSON.parse(text) : null;
+          compData = compText ? JSON.parse(compText) : null;
         } catch {
-          compData = { error: "Non-JSON response from /api/coin/comps", raw: text?.slice(0, 200) };
+          compData = {
+            error: "Non-JSON response from /api/coin/comps",
+            raw: compText?.slice(0, 200),
+          };
         }
 
         if (!compRes.ok) {
           console.warn("Comps error:", compRes.status, compData);
+          // don't throw; keep AI result visible even if comps fails
         } else {
-          setComps(compData);
+          setComps(compData as CompsResult);
+
+          // Optional: auto-open eBay sold comps tab
+          // openEbaySoldComps(compPhrase);
         }
-
-
-        if (!compRes.ok) {
-          console.warn("Comps error:", compData);
-        } else {
-          setComps(compData);
-        }
-
-        // 3) Optional open eBay tab
-        openEbaySoldComps(compPhrase);
       }
     } catch (err: any) {
       setError(err?.message ?? "Network error");
@@ -218,7 +226,7 @@ export default function CoinPage() {
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="rounded border border-white/20 bg-white/10 px-4 py-2 font-semibold text-white hover:bg-white/20 transition"
+            className="rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 transition"
           >
             Back Home
           </button>
@@ -253,7 +261,9 @@ export default function CoinPage() {
                       key={i}
                       className="rounded border border-white/10 bg-white/5 p-2 text-sm text-white/80"
                     >
-                      <span className="font-semibold">{r.severity.toUpperCase()}:</span>{" "}
+                      <span className="font-semibold">
+                        {r.severity.toUpperCase()}:
+                      </span>{" "}
                       {r.message}
                     </li>
                   ))}
@@ -265,17 +275,25 @@ export default function CoinPage() {
 
         {comps && (
           <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4">
-            <div className="text-sm font-semibold text-blue-200">Market Comps (eBay sold)</div>
+            <div className="text-sm font-semibold text-blue-200">
+              Market Comps (eBay sold)
+            </div>
 
             <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-white/80">
               <div>
                 Count: <span className="font-semibold">{comps.count}</span>
               </div>
               <div>
-                Median: <span className="font-semibold">${comps.median.toFixed(2)}</span>
+                Median:{" "}
+                <span className="font-semibold">
+                  ${comps.median.toFixed(2)}
+                </span>
               </div>
               <div>
-                Avg: <span className="font-semibold">${comps.average.toFixed(2)}</span>
+                Avg:{" "}
+                <span className="font-semibold">
+                  ${comps.average.toFixed(2)}
+                </span>
               </div>
               <div>
                 Range:{" "}
@@ -287,21 +305,31 @@ export default function CoinPage() {
 
             {comps.trimmed && (
               <>
-                <div className="mt-3 text-xs text-white/60">Trimmed (drops outliers)</div>
+                <div className="mt-3 text-xs text-white/60">
+                  Trimmed (drops outliers)
+                </div>
                 <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-white/80">
                   <div>
-                    Count: <span className="font-semibold">{comps.trimmed.count}</span>
+                    Count:{" "}
+                    <span className="font-semibold">{comps.trimmed.count}</span>
                   </div>
                   <div>
-                    Median: <span className="font-semibold">${comps.trimmed.median.toFixed(2)}</span>
+                    Median:{" "}
+                    <span className="font-semibold">
+                      ${comps.trimmed.median.toFixed(2)}
+                    </span>
                   </div>
                   <div>
-                    Avg: <span className="font-semibold">${comps.trimmed.average.toFixed(2)}</span>
+                    Avg:{" "}
+                    <span className="font-semibold">
+                      ${comps.trimmed.average.toFixed(2)}
+                    </span>
                   </div>
                   <div>
                     Range:{" "}
                     <span className="font-semibold">
-                      ${comps.trimmed.low.toFixed(2)}–${comps.trimmed.high.toFixed(2)}
+                      ${comps.trimmed.low.toFixed(2)}–$
+                      {comps.trimmed.high.toFixed(2)}
                     </span>
                   </div>
                 </div>
