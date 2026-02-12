@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import BackToHome from "@/components/BackToHome";
+
 
 export default function JoinPage() {
   const [fullName, setFullName] = useState("");
@@ -34,8 +36,15 @@ export default function JoinPage() {
   }
 
   return (
-    <main className="mx-auto max-w-xl p-6">
-      <h1 className="text-3xl font-bold">Join the Club</h1>
+    <main className="mx-auto max-w-3xl p-6 text-white">
+      <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+        <h1 className="text-3xl font-bold">
+          Join the Club
+        </h1>
+
+        <BackToHome />
+      </div>
+
       <p className="mt-2 text-white-600">
         Interested in joining the Brevard Coin Club? Fill out the form below and we’ll contact you.
       </p>
