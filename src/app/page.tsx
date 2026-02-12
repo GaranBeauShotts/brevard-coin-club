@@ -2,6 +2,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import FeatureCard from "@/components/FeatureCardd";
 import SiteHeader from "@/components/SiteHeader";
+import MetalsTicker from "@/components/MetalsTicker";
 
 type EventRow = {
   id: string;
@@ -34,10 +35,14 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-transparent text-zinc-100">
       <SiteHeader />
+      <div className="mx-auto max-w-6xl px-6 pt-6">
+        <MetalsTicker />
+      </div>
 
 
 
       {/* Hero */}
+
       <section className="mx-auto max-w-6xl px-6 pt-14 pb-10">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div>
@@ -45,6 +50,7 @@ export default async function HomePage() {
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
               Monthly meetings • Guest speakers • Shows
             </div>
+
 
             <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
               A local community for coin collectors in Brevard County.
@@ -70,7 +76,7 @@ export default async function HomePage() {
                 Learn More
               </Link>
             </div>
-        
+
             <div className="mt-6 grid grid-cols-3 gap-4 text-center">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="text-2xl font-bold">1×</div>
@@ -86,7 +92,7 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
-          
+
           {/* Hero card */}
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30">
             <div className="flex items-start justify-between gap-4">
@@ -132,14 +138,14 @@ export default async function HomePage() {
       </section>
       {/* Single image (no card), smaller and right-aligned */}
       <div className="flex justify-center px-6 pb-10">
-      <div className="overflow-hidden rounded-3xl w-full max-w-4xl">
-        <img
-          src="/gallery/gold_us.png"
-          alt="Brevard Coin Club meeting"
-           className="h-48 md:h-56 w-full object-cover"
-          loading="lazy"
-        />
-      </div>
+        <div className="overflow-hidden rounded-3xl w-full max-w-4xl">
+          <img
+            src="/gallery/gold_us.png"
+            alt="Brevard Coin Club meeting"
+            className="h-48 md:h-56 w-full object-cover"
+            loading="lazy"
+          />
+        </div>
       </div>
 
       {/* Features */}
@@ -174,10 +180,10 @@ export default async function HomePage() {
             desc="Moderated buy/sell/trade listings for members and local collectors."
             href="/classifieds"
             emoji="🏷️"
-/>
+          />
         </div>
       </section>
-             
+
       {/* Join */}
       <section id="join" className="mx-auto max-w-6xl px-6 py-12">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10">
