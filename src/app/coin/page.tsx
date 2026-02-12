@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type AiResult = {
   summary: string;
@@ -58,6 +59,8 @@ export default function CoinPage() {
   const [country, setCountry] = useState("");
   const [denomination, setDenomination] = useState("");
   const [grade, setGrade] = useState("Raw");
+
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -146,7 +149,7 @@ export default function CoinPage() {
 
   return (
     <main className="mx-auto max-w-xl p-6 text-white">
-      <h1 className="text-2xl font-bold mb-4">Coin Value Helper</h1>
+      <h1 className="text-2xl font-bold mb-4">Coin Value Analyzer</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -203,13 +206,23 @@ export default function CoinPage() {
           </select>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded bg-yellow-500 px-4 py-2 font-semibold text-black hover:bg-yellow-400 disabled:opacity-60"
-        >
-          {loading ? "Explaining..." : "Get Value Estimate"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 rounded bg-yellow-500 px-4 py-2 font-semibold text-black hover:bg-yellow-400 disabled:opacity-60"
+          >
+            {loading ? "Explaining..." : "Get Value Estimate"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="rounded border border-white/20 bg-white/10 px-4 py-2 font-semibold text-white hover:bg-white/20 transition"
+          >
+            Back Home
+          </button>
+        </div>
       </form>
 
       <div className="mt-6 space-y-4">

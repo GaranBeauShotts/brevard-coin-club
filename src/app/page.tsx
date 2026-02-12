@@ -53,7 +53,7 @@ export default async function HomePage() {
 
 
             <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
-              A local community for coin collectors in Brevard County.
+              A local community for coin collectors in South Brevard County.
             </h1>
 
             <p className="mt-4 text-base leading-relaxed text-zinc-300">
@@ -70,7 +70,7 @@ export default async function HomePage() {
                 See Upcoming Events
               </Link>
               <Link
-                href="#about"
+                href="/about"
                 className="rounded-xl border border-white/15 px-5 py-3 text-sm text-zinc-100 hover:bg-white/10"
               >
                 Learn More
@@ -170,7 +170,7 @@ export default async function HomePage() {
             emoji="📰"
           />
           <FeatureCard
-            title="Coin Value Helper"
+            title="Whats Your Coin Worth?"
             desc="An educational estimator with trusted references and disclaimers."
             href="/coin"
             emoji="🧭"
@@ -222,13 +222,17 @@ export default async function HomePage() {
             <Link className="hover:text-white" href="/events">
               Events
             </Link>
-            <Link className="hover:text-white" href="#">
-              Privacy
-            </Link>
-            <Link className="hover:text-white" href="#">
+            <Link className="hover:text-white" href="/contactForm">
               Contact
             </Link>
+            <Link className="hover:text-white" href="/privacy">
+              Privacy Policy
+            </Link>
+            <Link className="hover:text-white" href="/terms">
+              Terms
+            </Link>
           </div>
+
         </div>
       </footer>
     </main>

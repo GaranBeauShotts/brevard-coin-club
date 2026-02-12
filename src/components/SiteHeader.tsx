@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -34,15 +36,30 @@ export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-lg">
-            🪙
-          </span>
-          <div className="leading-tight">
-            <div className="text-sm font-semibold">Brevard Coin Club</div>
-            <div className="text-xs text-zinc-400">Community • Education • Events</div>
+        <Link
+          href="/"
+          className="flex items-center gap-3 transition hover:opacity-90"
+        >
+          <div className="relative h-14 w-14 shrink-0">
+            <Image
+              src="/brevard-logo.jpg"
+              alt="Brevard Coin Club Logo"
+              width={56}
+              height={56}
+              unoptimized
+              className="shrink-0 rounded-full object-contain"
+              priority
+            />
+
+
           </div>
+
+          <span className="text-2xl font-bold tracking-wide">
+            Brevard Coin Club
+          </span>
         </Link>
+
+
 
         <nav className="hidden items-center gap-6 text-sm text-zinc-200 md:flex">
           <Link className="hover:text-white" href="/events">
