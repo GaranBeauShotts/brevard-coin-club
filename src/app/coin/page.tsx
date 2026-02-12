@@ -8,35 +8,71 @@ type AiResult = {
   risk_flags: { severity: "low" | "medium" | "high"; message: string }[];
 };
 
+type CompsResult = {
+  query: string;
+  url: string;
+  count: number;
+  median: number;
+  average: number;
+  low: number;
+  high: number;
+  trimmed?: {
+    count: number;
+    median: number;
+    average: number;
+    low: number;
+    high: number;
+  };
+};
+
+function buildCompQuery(input: {
+  year: string;
+  country: string;
+  denomination: string;
+  grade: string;
+}) {
+  const { year, country, denomination, grade } = input;
+
+  const parts: string[] = [];
+  if (year.trim()) parts.push(year.trim());
+  if (denomination.trim()) parts.push(denomination.trim());
+  if (grade && grade !== "Raw") parts.push(grade.trim());
+  if (country.trim() && country.trim().toLowerCase() !== "united states") {
+    parts.push(country.trim());
+  }
+
+  return parts.join(" ").trim();
+}
+
+function openEbaySoldComps(searchPhrase: string) {
+  const url =
+    "https://www.ebay.com/sch/i.html?_nkw=" +
+    encodeURIComponent(searchPhrase) +
+    "&LH_Sold=1&LH_Complete=1";
+
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export default function CoinPage() {
   const [year, setYear] = useState("");
   const [country, setCountry] = useState("");
   const [denomination, setDenomination] = useState("");
   const [grade, setGrade] = useState("Raw");
 
-  // NEW: comps search phrase
-  const [query, setQuery] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ai, setAi] = useState<AiResult | null>(null);
 
-  const soldUrl = query.trim()
-    ? `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query.trim())}&LH_Sold=1&LH_Complete=1`
-    : null;
-
-  function fillCompQuery() {
-    const parts = [year, country, denomination, grade].filter(Boolean);
-    setQuery(parts.join(" ").trim());
-  }
+  // ✅ comps state belongs here (top-level)
+  const [comps, setComps] = useState<CompsResult | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setAi(null);
+    setComps(null);
 
-    // Fake valuation numbers for now (MVP)
     const payload = {
       coin: { country, denomination, year, grade },
       valuation: {
@@ -48,7 +84,10 @@ export default function CoinPage() {
       },
     };
 
+    const compPhrase = buildCompQuery({ year, country, denomination, grade });
+
     try {
+      // 1) Explain
       const res = await fetch("/api/coin/explain", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -64,6 +103,40 @@ export default function CoinPage() {
       }
 
       setAi(data);
+
+      // 2) Comps
+      if (compPhrase) {
+        const compRes = await fetch("/api/coin/comps", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: compPhrase }),
+        });
+
+        const text = await compRes.text();
+        let compData: any = null;
+
+        try {
+          compData = text ? JSON.parse(text) : null;
+        } catch {
+          compData = { error: "Non-JSON response from /api/coin/comps", raw: text?.slice(0, 200) };
+        }
+
+        if (!compRes.ok) {
+          console.warn("Comps error:", compRes.status, compData);
+        } else {
+          setComps(compData);
+        }
+
+
+        if (!compRes.ok) {
+          console.warn("Comps error:", compData);
+        } else {
+          setComps(compData);
+        }
+
+        // 3) Optional open eBay tab
+        openEbaySoldComps(compPhrase);
+      }
     } catch (err: any) {
       setError(err?.message ?? "Network error");
     } finally {
@@ -137,51 +210,9 @@ export default function CoinPage() {
         >
           {loading ? "Explaining..." : "Get Value Estimate"}
         </button>
-
-        {/* NEW: Sold comps helper */}
-        <div className="mt-4 space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div className="flex items-center justify-between gap-2">
-            <label className="text-sm text-white/80">Search phrase for sold comps</label>
-            <button
-              type="button"
-              onClick={fillCompQuery}
-              className="h-8 inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs hover:bg-white/10 transition"
-              title="Use the fields above to build a search"
-            >
-              Auto-fill
-            </button>
-          </div>
-
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder='Example: 1881-S Morgan Dollar PCGS MS63'
-            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-          />
-
-          <a
-            href={soldUrl ?? "#"}
-            target="_blank"
-            rel="noreferrer"
-            className={`h-10 inline-flex items-center justify-center rounded-xl px-4 text-sm font-semibold transition ${
-              soldUrl
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-white/10 text-white/40 cursor-not-allowed"
-            }`}
-            onClick={(e) => {
-              if (!soldUrl) e.preventDefault();
-            }}
-          >
-            View Sold Comps on eBay
-          </a>
-
-          <p className="text-xs text-white/50">
-            Tip: Include date + mint + grade. Example: “1881-S Morgan Dollar MS63”.
-          </p>
-        </div>
       </form>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-4">
         {error && (
           <div className="rounded border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200">
             {error}
@@ -216,6 +247,62 @@ export default function CoinPage() {
                 </ul>
               </>
             )}
+          </div>
+        )}
+
+        {comps && (
+          <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4">
+            <div className="text-sm font-semibold text-blue-200">Market Comps (eBay sold)</div>
+
+            <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-white/80">
+              <div>
+                Count: <span className="font-semibold">{comps.count}</span>
+              </div>
+              <div>
+                Median: <span className="font-semibold">${comps.median.toFixed(2)}</span>
+              </div>
+              <div>
+                Avg: <span className="font-semibold">${comps.average.toFixed(2)}</span>
+              </div>
+              <div>
+                Range:{" "}
+                <span className="font-semibold">
+                  ${comps.low.toFixed(2)}–${comps.high.toFixed(2)}
+                </span>
+              </div>
+            </div>
+
+            {comps.trimmed && (
+              <>
+                <div className="mt-3 text-xs text-white/60">Trimmed (drops outliers)</div>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-white/80">
+                  <div>
+                    Count: <span className="font-semibold">{comps.trimmed.count}</span>
+                  </div>
+                  <div>
+                    Median: <span className="font-semibold">${comps.trimmed.median.toFixed(2)}</span>
+                  </div>
+                  <div>
+                    Avg: <span className="font-semibold">${comps.trimmed.average.toFixed(2)}</span>
+                  </div>
+                  <div>
+                    Range:{" "}
+                    <span className="font-semibold">
+                      ${comps.trimmed.low.toFixed(2)}–${comps.trimmed.high.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <a
+              href={comps.url}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex text-sm font-semibold text-blue-200 underline hover:text-blue-100"
+            >
+              View sold comps on eBay →
+            </a>
           </div>
         )}
       </div>

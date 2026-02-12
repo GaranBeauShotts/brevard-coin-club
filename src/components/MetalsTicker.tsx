@@ -64,59 +64,49 @@ export default function MetalsTicker() {
         return () => clearInterval(t);
     }, []);
 
-    return (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="text-sm font-semibold">The Current State of our Metals</div>
-                    <span className="text-xs text-white/50">Gold & Silver</span>
-                </div>
+   return (
+  <div className="w-full border-b border-white/10 bg-zinc-900/80 backdrop-blur">
+    <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-sm">
 
-                <button
-                    onClick={load}
-                    className="h-9 inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-sm hover:bg-white/10 transition"
-                >
-                    Refresh
-                </button>
+      {data && !loading && !error ? (
+        <>
+          {/* Left side */}
+          <div className="flex items-center gap-6">
+
+            {/* Gold */}
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-yellow-300">Gold (XAU|USD)</span>
+              <span className="font-semibold">
+                {money(data.gold.price)}
+              </span>
             </div>
 
-            {loading && (
-                <div className="mt-3 text-sm text-white/70">Loading prices…</div>
-            )}
+            {/* Divider */}
+            <span className="text-white/20">|</span>
 
-            {error && !loading && (
-                <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
-                    {error}
-                </div>
-            )}
+            {/* Silver */}
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-zinc-300">Silver (XAG|USD)</span>
+              <span className="font-semibold">
+                {money(data.silver.price)}
+              </span>
+            </div>
 
-            {data && !loading && !error && (
-                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm font-semibold">🥇 Gold (XAU)</div>
-                            <div className="text-sm font-semibold text-yellow-200">
-                                {money(data.gold.price)}
-                            </div>
-                        </div>
-                        <div className="mt-1 text-xs text-white/50">
-                            Updated: {new Date(data.gold.updatedAt).toLocaleString()}
-                        </div>
-                    </div>
+          </div>
 
-                    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm font-semibold">🥈 Silver (XAG)</div>
-                            <div className="text-sm font-semibold text-zinc-200">
-                                {money(data.silver.price)}
-                            </div>
-                        </div>
-                        <div className="mt-1 text-xs text-white/50">
-                            Updated: {new Date(data.silver.updatedAt).toLocaleString()}
-                        </div>
-                    </div>
-                </div>
-            )}
+          {/* Right side */}
+          <div className="text-xs text-white/50">
+            Updated {data.gold.updatedAtReadable ?? new Date(data.gold.updatedAt).toLocaleTimeString()}
+          </div>
+        </>
+      ) : (
+        <div className="text-white/60">
+          {loading ? "Loading spot prices…" : error ?? "Spot unavailable"}
         </div>
-    );
+      )}
+
+    </div>
+  </div>
+);
+
 }
