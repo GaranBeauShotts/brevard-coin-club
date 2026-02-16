@@ -3,6 +3,13 @@ import { supabase } from "@/lib/supabaseClient";
 import FeatureCard from "@/components/FeatureCardd";
 import SiteHeader from "@/components/SiteHeader";
 import MetalsTicker from "@/components/MetalsTicker";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Classifieds",
+  description:
+    "Browse, search, and post coin listings in the Brevard Coin Club marketplace.",
+};
 
 type EventRow = {
   id: string;

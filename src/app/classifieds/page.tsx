@@ -3,6 +3,9 @@ import Link from "next/link";
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import type { Metadata } from "next";
+
+
 
 type Classified = {
     id: string;
