@@ -52,15 +52,24 @@ export default function ClassifiedsPage() {
 
     useEffect(() => {
         // initial user
-        supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+        supabase.auth.getUser().then(({ data }) => {
+            setUserId(data.user?.id ?? null);
+        });
 
         // update user on auth changes
         const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUserId(session?.user?.id ?? null);
+            const id = session?.user?.id ?? null;
+            setUserId(id);
+
+            if (!id) {
+                setEditingId(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
         });
 
         return () => sub.subscription.unsubscribe();
     }, []);
+
 
     async function fetchItems(search?: string) {
         setLoading(true);
@@ -223,138 +232,141 @@ export default function ClassifiedsPage() {
                 </div>
             </div>
 
-            {/* Form */}
-            <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
-                <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-lg font-semibold">{editingId ? "Edit Listing" : "Create Listing"}</h2>
-                    {editingId && (
-                        <span className="text-xs text-yellow-200/90 rounded-full border border-yellow-200/20 bg-yellow-200/10 px-3 py-1">
-                            Editing
-                        </span>
-                    )}
-                </div>
-
-                {!userId && (
-                    <div className="mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-sm text-yellow-100">
-                        You must be logged in to post, edit, or delete listings.{" "}
-                        <a className="underline" href="/login">
-                            Log in
-                        </a>
-                    </div>
-                )}
-
-                <form onSubmit={onSubmit} className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                        <label className="text-sm text-white/80">Title *</label>
-                        <input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Example: 1881 Morgan Dollar - Toned"
-                            className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-                            required
-                            disabled={!userId || saving}
-                        />
+            {/* Form (only visible if logged in) */}
+            {userId ? (
+                <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                        <h2 className="text-lg font-semibold">{editingId ? "Edit Listing" : "Create Listing"}</h2>
+                        {editingId && (
+                            <span className="text-xs text-yellow-200/90 rounded-full border border-yellow-200/20 bg-yellow-200/10 px-3 py-1">
+                                Editing
+                            </span>
+                        )}
                     </div>
 
-                    <div className="md:col-span-2">
-                        <label className="text-sm text-white/80">Description *</label>
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Condition, provenance, pickup/shipping notes, etc."
-                            className="mt-1 w-full min-h-[110px] rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-                            required
-                            disabled={!userId || saving}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-sm text-white/80">Price</label>
-                        <input
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            inputMode="decimal"
-                            placeholder="0"
-                            className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-                            disabled={!userId || saving}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-sm text-white/80">Contact Email (optional)</label>
-                        <input
-                            value={contactEmail}
-                            onChange={(e) => setContactEmail(e.target.value)}
-                            placeholder="name@example.com"
-                            className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-                            disabled={!userId || saving}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-sm text-white/80">Category</label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value as any)}
-                            className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-                            disabled={!userId || saving}
-                        >
-                            {CATEGORIES.map((c) => (
-                                <option key={c} value={c} className="bg-black">
-                                    {c}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="text-sm text-white/80">Status</label>
-                        <select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value as any)}
-                            className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-                            disabled={!userId || saving}
-                        >
-                            {STATUSES.map((s) => (
-                                <option key={s} value={s} className="bg-black">
-                                    {s}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="md:col-span-2 flex flex-col md:flex-row gap-2 md:items-center md:justify-between">
-                        <div className="text-xs text-white/60">
-                            Required fields: Title, Description. Only the owner can edit/delete.
+                    <form onSubmit={onSubmit} className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                            <label className="text-sm text-white/80">Title *</label>
+                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Example: 1881 Morgan Dollar - Toned"
+                                className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+                                required
+                                disabled={saving}
+                            />
                         </div>
 
-                        <div className="flex gap-2">
-                            {editingId && (
-                                <button
-                                    type="button"
-                                    onClick={resetForm}
-                                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10 transition"
-                                >
-                                    Cancel
-                                </button>
-                            )}
-                            <button
-                                type="submit"
-                                disabled={saving || !userId}
-                                className="rounded-xl bg-yellow-400 px-4 py-2 text-sm font-semibold text-black hover:bg-yellow-300 disabled:opacity-60 transition"
+                        <div className="md:col-span-2">
+                            <label className="text-sm text-white/80">Description *</label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Condition, provenance, pickup/shipping notes, etc."
+                                className="mt-1 w-full min-h-[110px] rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+                                required
+                                disabled={saving}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-white/80">Price</label>
+                            <input
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                                inputMode="decimal"
+                                placeholder="0"
+                                className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+                                disabled={saving}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-white/80">Contact Email (optional)</label>
+                            <input
+                                value={contactEmail}
+                                onChange={(e) => setContactEmail(e.target.value)}
+                                placeholder="name@example.com"
+                                className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+                                disabled={saving}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-white/80">Category</label>
+                            <select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value as any)}
+                                className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+                                disabled={saving}
                             >
-                                {saving ? "Saving..." : editingId ? "Save Changes" : "Post Listing"}
-                            </button>
+                                {CATEGORIES.map((c) => (
+                                    <option key={c} value={c} className="bg-black">
+                                        {c}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                    </div>
-                </form>
 
-                {error && (
-                    <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
-                        {error}
+                        <div>
+                            <label className="text-sm text-white/80">Status</label>
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value as any)}
+                                className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+                                disabled={saving}
+                            >
+                                {STATUSES.map((s) => (
+                                    <option key={s} value={s} className="bg-black">
+                                        {s}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="md:col-span-2 flex flex-col md:flex-row gap-2 md:items-center md:justify-between">
+                            <div className="text-xs text-white/60">
+                                Required fields: Title, Description. Only the owner can edit/delete.
+                            </div>
+
+                            <div className="flex gap-2">
+                                {editingId && (
+                                    <button
+                                        type="button"
+                                        onClick={resetForm}
+                                        className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10 transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                                <button
+                                    type="submit"
+                                    disabled={saving}
+                                    className="rounded-xl bg-yellow-400 px-4 py-2 text-sm font-semibold text-black hover:bg-yellow-300 disabled:opacity-60 transition"
+                                >
+                                    {saving ? "Saving..." : editingId ? "Save Changes" : "Post Listing"}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {error && (
+                        <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+                            {error}
+                        </div>
+                    )}
+                </section>
+            ) : (
+                <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
+                    <h2 className="text-lg font-semibold">Create Listing</h2>
+                    <div className="mt-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-sm text-yellow-100">
+                        You must be logged in to post listings.{" "}
+                        <Link className="underline" href="/login">
+                            Log in
+                        </Link>
                     </div>
-                )}
-            </section>
+                </section>
+            )}
 
             {/* Toolbar */}
             <section className="mt-6 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">

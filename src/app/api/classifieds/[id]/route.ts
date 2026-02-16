@@ -5,11 +5,11 @@ function isNonEmptyString(v: unknown) {
   return typeof v === "string" && v.trim().length > 0;
 }
 
-type Ctx = { params: Promise<{ id: string }> };
+type Ctx = { params: { id: string } };
 
 export async function GET(_req: Request, { params }: Ctx) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     const { data, error } = await supabase
       .from("classifieds")
@@ -17,10 +17,7 @@ export async function GET(_req: Request, { params }: Ctx) {
       .eq("id", id)
       .single();
 
-    if (error) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-
+    if (error) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(data, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
@@ -29,7 +26,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 
 export async function PUT(req: Request, { params }: Ctx) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const body = await req.json();
 
     const update: any = {};
@@ -72,10 +69,7 @@ export async function PUT(req: Request, { params }: Ctx) {
       .select("*")
       .single();
 
-    if (error) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-
+    if (error) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(data, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
@@ -84,7 +78,7 @@ export async function PUT(req: Request, { params }: Ctx) {
 
 export async function DELETE(_req: Request, { params }: Ctx) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     const { data, error } = await supabase
       .from("classifieds")
@@ -93,10 +87,7 @@ export async function DELETE(_req: Request, { params }: Ctx) {
       .select("*")
       .single();
 
-    if (error) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-
+    if (error) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ deleted: true, record: data }, { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });

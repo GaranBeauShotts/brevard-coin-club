@@ -8,18 +8,37 @@ function isNonEmptyString(v: unknown) {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
+
     const q = url.searchParams.get("q")?.trim() || "";
+    const category = url.searchParams.get("category")?.trim() || "";
+    const status = url.searchParams.get("status")?.trim() || "";
+    const sort = url.searchParams.get("sort")?.trim() || "newest";
 
-    let query = supabase
-      .from("classifieds")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const minPriceRaw = url.searchParams.get("minPrice");
+    const maxPriceRaw = url.searchParams.get("maxPrice");
 
-    // Optional search: /api/classifieds?q=morgan
+    const minPrice = minPriceRaw !== null && minPriceRaw !== "" ? Number(minPriceRaw) : null;
+    const maxPrice = maxPriceRaw !== null && maxPriceRaw !== "" ? Number(maxPriceRaw) : null;
+
+    let query = supabase.from("classifieds").select("*");
+
+    // Search title OR description
     if (q) {
-      // Searches title OR description (Postgres "or" syntax)
-      query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+      const safe = q.replaceAll(",", " "); // prevent breaking `or(...)`
+      query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%`);
     }
+
+    // Filters
+    if (category) query = query.eq("category", category);
+    if (status) query = query.eq("status", status);
+
+    if (minPrice !== null && !Number.isNaN(minPrice)) query = query.gte("price", minPrice);
+    if (maxPrice !== null && !Number.isNaN(maxPrice)) query = query.lte("price", maxPrice);
+
+    // Sort
+    if (sort === "price_asc") query = query.order("price", { ascending: true });
+    else if (sort === "price_desc") query = query.order("price", { ascending: false });
+    else query = query.order("created_at", { ascending: false }); // newest
 
     const { data, error } = await query;
 
@@ -27,10 +46,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // keep your existing response shape (array)
     return NextResponse.json(data ?? [], { status: 200 });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
   }
+
 }
 
 export async function POST(req: Request) {
