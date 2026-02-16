@@ -1,62 +1,79 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import BackToHome from "@/components/BackToHome";
-
 
 export default function JoinPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
 
-    const { error } = await supabase
-      .from("club_join_requests")
-      .insert({
-        full_name: fullName,
-        email,
-        message,
+    try {
+      const res = await fetch("/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: fullName,
+          email,
+          message,
+        }),
       });
 
-    if (error) {
-      console.error(error);
-      setStatus("error");
-      return;
-    }
+      const json = await res.json();
 
-    setStatus("success");
-    setFullName("");
-    setEmail("");
-    setMessage("");
+      if (!res.ok) {
+        console.error(json?.error);
+        setStatus("error");
+        return;
+      }
+
+      setStatus("success");
+      setFullName("");
+      setEmail("");
+      setMessage("");
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    }
   }
 
   return (
     <main className="mx-auto max-w-3xl p-6 text-white">
       <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
-        <h1 className="text-3xl font-bold">
-          Join the Club
-        </h1>
-
+        <h1 className="text-3xl font-bold">Join the Club</h1>
         <BackToHome />
       </div>
 
-      <p className="mt-2 text-white-600">
-        Interested in joining the Brevard Coin Club? Fill out the form below and we’ll contact you.
+      <p className="mt-2 text-white/70">
+        Interested in joining the Brevard Coin Club? Fill out the form below and we’ll review your request.
       </p>
+      <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6">
+        <h2 className="text-xl font-semibold mb-3">Member Benefits</h2>
+        <ul className="space-y-2 text-white/80 text-sm">
+          <li>• Post and manage classified listings</li>
+          <li>• Access private member-only content</li>
+          <li>• Receive club newsletters</li>
+          <li>• Early access to events and auctions</li>
+        </ul>
+      </div>
+
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
           <label className="block text-sm font-medium">Full Name</label>
           <input
-            className="mt-1 w-full rounded border p-2"
+            className="mt-1 w-full rounded border border-white/10 bg-white/5 p-2"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
+            disabled={status === "loading"}
           />
         </div>
 
@@ -64,20 +81,22 @@ export default function JoinPage() {
           <label className="block text-sm font-medium">Email</label>
           <input
             type="email"
-            className="mt-1 w-full rounded border p-2"
+            className="mt-1 w-full rounded border border-white/10 bg-white/5 p-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={status === "loading"}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Message (optional)</label>
           <textarea
-            className="mt-1 w-full rounded border p-2"
+            className="mt-1 w-full rounded border border-white/10 bg-white/5 p-2"
             rows={4}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            disabled={status === "loading"}
           />
         </div>
 
@@ -88,14 +107,19 @@ export default function JoinPage() {
         >
           {status === "loading" ? "Submitting..." : "Submit"}
         </button>
-
         {status === "success" && (
-          <p className="text-green-600">Thanks! Your request has been submitted.</p>
+          <div className="mt-4 rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-green-300">
+            ✅ Application received! A club admin will review your request.
+          </div>
         )}
 
         {status === "error" && (
-          <p className="text-red-600">Something went wrong. Please try again.</p>
+          <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-red-300">
+            Something went wrong. Please try again.
+          </div>
         )}
+
+
       </form>
     </main>
   );

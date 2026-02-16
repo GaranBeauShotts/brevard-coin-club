@@ -48,11 +48,12 @@ function arrowClass(d: string) {
 
 // No arrow on first load / flat
 function arrowChar(d: string) {
-  return d === "up" ? "▲" : d === "down" ? "▼" : "";
+  return d === "up" ? "▲" : d === "down" ? "▼" : "—";
 }
 
+
 export default function MetalsTicker() {
-  
+
   const [data, setData] = useState<MetalsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -88,6 +89,7 @@ export default function MetalsTicker() {
         }
         return json;
       });
+
     } catch (e: any) {
       setError(e?.message ?? "Failed to load metals");
       setData(null);
