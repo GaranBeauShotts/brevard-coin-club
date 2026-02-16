@@ -5,11 +5,12 @@ function isNonEmptyString(v: unknown) {
   return typeof v === "string" && v.trim().length > 0;
 }
 
-type Ctx = { params: { id: string } };
+type Ctx = { params: Promise<{ id: string }> };
+
 
 export async function GET(_req: Request, { params }: Ctx) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from("classifieds")
@@ -26,7 +27,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 
 export async function PUT(req: Request, { params }: Ctx) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const update: any = {};
@@ -78,7 +79,7 @@ export async function PUT(req: Request, { params }: Ctx) {
 
 export async function DELETE(_req: Request, { params }: Ctx) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from("classifieds")
