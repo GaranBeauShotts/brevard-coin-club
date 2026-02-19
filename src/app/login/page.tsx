@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { loginAction } from "./actions";
 import ErrorBanner from "./error-banner";
+export const dynamic = "force-dynamic";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
