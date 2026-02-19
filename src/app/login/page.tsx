@@ -2,16 +2,27 @@
 
 import Link from "next/link";
 import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { loginAction } from "./actions";
 import ErrorBanner from "./error-banner";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const checkEmail = searchParams.get("check_email");
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
       <div className="mx-auto max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30">
         <h1 className="text-2xl font-bold mb-6 text-center text-zinc-100">
           Login
         </h1>
+
+        {/* ✅ Check email banner */}
+        {checkEmail === "1" && (
+          <div className="mb-4 rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-200">
+            Account created! Please check your email to confirm your account, then come back and sign in.
+          </div>
+        )}
 
         <Suspense fallback={null}>
           <ErrorBanner />
@@ -42,10 +53,7 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center text-sm text-zinc-400">
           Don’t have an account?{" "}
-          <Link
-            href="/register"
-            className="text-white hover:underline font-medium"
-          >
+          <Link href="/register" className="text-white hover:underline font-medium">
             Create Account
           </Link>
           <div className="mt-3">
