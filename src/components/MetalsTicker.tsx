@@ -58,7 +58,8 @@ export default function MetalsTicker() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const prevRef = useRef<{ gold?: number; silver?: number } | null>(null);
+  const prevRef = useRef<{ gold?: number; silver?: number }>({});
+
 
   async function load() {
     setLoading(true);

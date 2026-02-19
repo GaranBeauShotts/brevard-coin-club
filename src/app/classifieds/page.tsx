@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 
 
 
+
 type Classified = {
     id: string;
     title: string;
