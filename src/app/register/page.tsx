@@ -14,7 +14,7 @@ export default function RegisterPage() {
   // profile fields
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState(""); // you can treat this as address/city/state
+  const [location, setLocation] = useState("");
   const [preferredContact, setPreferredContact] = useState<"email" | "phone">("email");
 
   const [loading, setLoading] = useState(false);
@@ -31,42 +31,31 @@ export default function RegisterPage() {
 
     try {
       // 1) Create auth user
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
         password,
         options: {
-          // optional: sends email confirmation + redirects back
           emailRedirectTo: `${window.location.origin}/account`,
         },
       });
 
       if (signUpError) throw signUpError;
 
-      const userId = data.user?.id;
-      if (!userId) {
-        // If email confirmation is required, Supabase may not create a session yet,
-        // but user object should still exist. If not, give a friendly message.
-        throw new Error("Account created, but user info was not returned. Please check your email and try logging in.");
-      }
-
-      // 2) Save profile fields
+      // 2) OPTIONAL: store their entered profile info locally so /account can prefill
+      // (Remove this block if you don’t want to store anything in the browser)
       const phoneDigits = phone.trim() ? cleanPhone(phone) : "";
-
-      const { error: profileError } = await supabase.from("profiles").upsert(
-        {
-          id: userId,
+      localStorage.setItem(
+        "pending_profile",
+        JSON.stringify({
           full_name: fullName.trim() || null,
           phone: phoneDigits || null,
           location: location.trim() || null,
           preferred_contact: preferredContact,
-        },
-        { onConflict: "id" }
+        })
       );
 
-      if (profileError) throw profileError;
-
-      // 3) Done → go to account
-      router.push("/account");
+      // 3) Send them to login (or a “check your email” screen)
+      router.push("/login?check_email=1");
     } catch (err: any) {
       setError(err?.message ?? "Registration failed.");
     } finally {
@@ -95,7 +84,7 @@ export default function RegisterPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="Your Name "
+              placeholder="Your Name"
               autoComplete="name"
             />
           </div>
@@ -106,7 +95,7 @@ export default function RegisterPage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="your mailing address"
+              placeholder="City, State"
               autoComplete="address-level2"
             />
             <p className="mt-1 text-xs text-white/50">
