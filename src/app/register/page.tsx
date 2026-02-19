@@ -11,7 +11,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // profile fields
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
@@ -30,7 +29,6 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      // 1) Create auth user
       const { error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -41,8 +39,6 @@ export default function RegisterPage() {
 
       if (signUpError) throw signUpError;
 
-      // 2) OPTIONAL: store their entered profile info locally so /account can prefill
-      // (Remove this block if you don’t want to store anything in the browser)
       const phoneDigits = phone.trim() ? cleanPhone(phone) : "";
       localStorage.setItem(
         "pending_profile",
@@ -54,8 +50,8 @@ export default function RegisterPage() {
         })
       );
 
-      // 3) Send them to login (or a “check your email” screen)
       router.push("/login?check_email=1");
+      return;
     } catch (err: any) {
       setError(err?.message ?? "Registration failed.");
     } finally {
@@ -78,88 +74,8 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleRegister} className="mt-6 space-y-4">
-          <div>
-            <label className="text-sm text-white/80">Full Name</label>
-            <input
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="Your Name"
-              autoComplete="name"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-white/80">Location / Address</label>
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="City, State"
-              autoComplete="address-level2"
-            />
-            <p className="mt-1 text-xs text-white/50">
-              Keep it general (city/state) if you don’t want to share your full address.
-            </p>
-          </div>
-
-          <div>
-            <label className="text-sm text-white/80">Phone (optional)</label>
-            <input
-              type="tel"
-              inputMode="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="(321) 555-1234"
-              autoComplete="tel"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-white/80">Preferred Contact</label>
-            <select
-              value={preferredContact}
-              onChange={(e) => setPreferredContact(e.target.value as any)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-            >
-              <option value="email" className="bg-black">
-                Email
-              </option>
-              <option value="phone" className="bg-black">
-                Phone
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-sm text-white/80">Email *</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="you@example.com"
-              autoComplete="email"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-white/80">Password *</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
-              placeholder="Create a password"
-              autoComplete="new-password"
-              minLength={6}
-            />
-            <p className="mt-1 text-xs text-white/50">Minimum 6 characters.</p>
-          </div>
-
+          {/* keep your inputs exactly as you have them */}
+          {/* ... */}
           <button
             type="submit"
             disabled={loading}
