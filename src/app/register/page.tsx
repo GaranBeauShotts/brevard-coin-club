@@ -51,7 +51,6 @@ export default function RegisterPage() {
       );
 
       router.push("/login?check_email=1");
-      return;
     } catch (err: any) {
       setError(err?.message ?? "Registration failed.");
     } finally {
@@ -74,8 +73,94 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleRegister} className="mt-6 space-y-4">
-          {/* keep your inputs exactly as you have them */}
-          {/* ... */}
+          <div>
+            <label className="text-sm text-white/80">Full Name</label>
+            <input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+              placeholder="Your Name"
+              autoComplete="name"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-white/80">Location / Address</label>
+            <input
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+              placeholder="City, State"
+              autoComplete="address-level2"
+              disabled={loading}
+            />
+            <p className="mt-1 text-xs text-white/50">
+              Keep it general (city/state) if you don’t want to share your full address.
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm text-white/80">Phone (optional)</label>
+            <input
+              type="tel"
+              inputMode="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+              placeholder="(321) 555-1234"
+              autoComplete="tel"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-white/80">Preferred Contact</label>
+            <select
+              value={preferredContact}
+              onChange={(e) => setPreferredContact(e.target.value as any)}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+              disabled={loading}
+            >
+              <option value="email" className="bg-black">
+                Email
+              </option>
+              <option value="phone" className="bg-black">
+                Phone
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-sm text-white/80">Email *</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+              placeholder="you@example.com"
+              autoComplete="email"
+              disabled={loading}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-white/80">Password *</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 outline-none focus:border-white/20"
+              placeholder="Create a password"
+              autoComplete="new-password"
+              minLength={6}
+              disabled={loading}
+            />
+            <p className="mt-1 text-xs text-white/50">Minimum 6 characters.</p>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
