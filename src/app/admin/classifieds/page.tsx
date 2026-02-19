@@ -1,7 +1,6 @@
 import { requireAdmin } from "@/lib/requireAdmin";
-
 import { revalidatePath } from "next/cache";
-import { ConfirmDeleteButton } from "./actions"
+import { ConfirmDeleteButton } from "./actions";
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -10,13 +9,14 @@ function cx(...classes: Array<string | false | null | undefined>) {
 function statusPill(status: string) {
   const s = (status || "").toLowerCase();
   const isInactive = s === "inactive";
+
   return (
     <span
       className={cx(
         "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1",
         isInactive
-          ? "bg-zinc-100 text-zinc-700 ring-zinc-200"
-          : "bg-emerald-50 text-emerald-700 ring-emerald-200"
+          ? "bg-zinc-800 text-zinc-400 ring-zinc-700"
+          : "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20"
       )}
     >
       {isInactive ? "Inactive" : "Active"}
@@ -72,7 +72,6 @@ export default async function AdminClassifiedsPage({
   if (status === "inactive") query = query.eq("status", "inactive");
 
   if (q) {
-    // Search across a few useful fields
     query = query.or(
       `title.ilike.%${q}%,description.ilike.%${q}%,contact_email.ilike.%${q}%`
     );
@@ -82,46 +81,56 @@ export default async function AdminClassifiedsPage({
 
   if (error) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
-          <h2 className="text-lg font-bold text-red-900">Moderate Classifieds</h2>
-          <p className="mt-2 text-sm text-red-800">Failed to load: {error.message}</p>
+      <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-950 to-black text-zinc-100">
+        <div className="mx-auto max-w-6xl p-8">
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5">
+            <h2 className="text-lg font-bold text-red-200">Moderate Classifieds</h2>
+            <p className="mt-2 text-sm text-red-200/80">Failed to load: {error.message}</p>
+          </div>
         </div>
       </div>
     );
   }
 
   const total = classifieds?.length ?? 0;
-  const activeCount = (classifieds ?? []).filter((c) => (c.status || "").toLowerCase() !== "inactive").length;
+  const activeCount = (classifieds ?? []).filter(
+    (c) => (c.status || "").toLowerCase() !== "inactive"
+  ).length;
   const inactiveCount = total - activeCount;
 
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <div className="mx-auto max-w-6xl p-6">
+    <div className="min-h-screen bg-transparent text-zinc-100">
+
+
+
+      <div className="mx-auto max-w-6xl p-8">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-2">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900">
+              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-100">
                 Moderate Classifieds
               </h1>
-              <p className="mt-1 text-sm text-zinc-600">
-                Logged in as <span className="font-semibold">{user.email}</span>
+              <p className="mt-1 text-sm text-zinc-400">
+                Logged in as <span className="font-semibold text-zinc-200">{user.email}</span>
               </p>
             </div>
 
-            <div className="flex gap-2">
-              <div className="rounded-xl border bg-white px-3 py-2 text-sm">
-                <span className="text-zinc-500">Total</span>{" "}
-                <span className="font-bold text-zinc-900">{total}</span>
+            {/* Stats */}
+            <div className="flex gap-3">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm px-4 py-3 text-sm">
+                <span className="text-zinc-400">Total</span>{" "}
+                <span className="ml-1 font-bold text-zinc-100">{total}</span>
               </div>
-              <div className="rounded-xl border bg-white px-3 py-2 text-sm">
-                <span className="text-zinc-500">Active</span>{" "}
-                <span className="font-bold text-zinc-900">{activeCount}</span>
+
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm">
+                <span className="text-emerald-400">Active</span>{" "}
+                <span className="ml-1 font-bold text-emerald-300">{activeCount}</span>
               </div>
-              <div className="rounded-xl border bg-white px-3 py-2 text-sm">
-                <span className="text-zinc-500">Inactive</span>{" "}
-                <span className="font-bold text-zinc-900">{inactiveCount}</span>
+
+              <div className="rounded-xl border border-zinc-700 bg-zinc-800/60 px-4 py-3 text-sm">
+                <span className="text-zinc-400">Inactive</span>{" "}
+                <span className="ml-1 font-bold text-zinc-200">{inactiveCount}</span>
               </div>
             </div>
           </div>
@@ -129,26 +138,26 @@ export default async function AdminClassifiedsPage({
 
         {/* Filters */}
         <form
-          className="mb-6 grid gap-3 rounded-2xl border bg-white p-4 md:grid-cols-12"
+          className="mb-6 grid gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm p-5 md:grid-cols-12"
           action="/admin/classifieds"
           method="get"
         >
           <div className="md:col-span-8">
-            <label className="block text-xs font-semibold text-zinc-700">Search</label>
+            <label className="block text-xs font-semibold text-zinc-300">Search</label>
             <input
               name="q"
               defaultValue={q}
               placeholder="Search title, description, or email…"
-              className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-500"
+              className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder:text-zinc-500 outline-none focus:border-emerald-500/60"
             />
           </div>
 
           <div className="md:col-span-3">
-            <label className="block text-xs font-semibold text-zinc-700">Status</label>
+            <label className="block text-xs font-semibold text-zinc-300">Status</label>
             <select
               name="status"
               defaultValue={status}
-              className="mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-500"
+              className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-emerald-500/60"
             >
               <option value="all">All</option>
               <option value="active">Active</option>
@@ -159,7 +168,7 @@ export default async function AdminClassifiedsPage({
           <div className="md:col-span-1 flex items-end">
             <button
               type="submit"
-              className="w-full rounded-xl bg-zinc-900 px-3 py-2 text-sm font-semibold text-white hover:bg-zinc-800"
+              className="w-full rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
             >
               Go
             </button>
@@ -168,36 +177,39 @@ export default async function AdminClassifiedsPage({
 
         {/* List */}
         {!classifieds?.length ? (
-          <div className="rounded-2xl border bg-white p-6 text-sm text-zinc-700">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm p-6 text-sm text-zinc-400">
             No classifieds found.
           </div>
         ) : (
           <div className="grid gap-4">
             {classifieds.map((c) => (
-              <div key={c.id} className="rounded-2xl border bg-white p-5 shadow-sm">
+              <div
+                key={c.id}
+                className="rounded-2xl border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm p-6 shadow-xl transition hover:border-zinc-700"
+              >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-bold text-zinc-900">{c.title}</h2>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h2 className="text-lg font-bold text-zinc-100">{c.title}</h2>
 
                       {statusPill(c.status)}
 
-                      <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-semibold text-zinc-700">
+                      <span className="rounded-full bg-zinc-800 px-2.5 py-1 text-xs font-semibold text-zinc-300 ring-1 ring-zinc-700">
                         {c.category}
                       </span>
 
-                      <span className="ml-1 text-sm font-semibold text-zinc-900">
+                      <span className="ml-1 text-sm font-semibold text-emerald-400">
                         ${Number(c.price).toFixed(2)}
                       </span>
                     </div>
 
-                    <div className="mt-2 text-xs text-zinc-600">
+                    <div className="mt-2 text-xs text-zinc-400">
                       {new Date(c.created_at).toLocaleString()}
                       {c.contact_email ? ` • ${c.contact_email}` : ""}
                       {c.user_id ? ` • user: ${c.user_id}` : ""}
                     </div>
 
-                    <p className="mt-4 whitespace-pre-wrap text-sm text-zinc-800">
+                    <p className="mt-4 whitespace-pre-wrap text-sm text-zinc-300">
                       {c.description}
                     </p>
                   </div>
@@ -211,7 +223,7 @@ export default async function AdminClassifiedsPage({
                           <input type="hidden" name="status" value="inactive" />
                           <button
                             type="submit"
-                            className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+                            className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-200 hover:bg-zinc-700"
                           >
                             Deactivate
                           </button>
@@ -222,7 +234,7 @@ export default async function AdminClassifiedsPage({
                           <input type="hidden" name="status" value="active" />
                           <button
                             type="submit"
-                            className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+                            className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-200 hover:bg-zinc-700"
                           >
                             Reactivate
                           </button>
