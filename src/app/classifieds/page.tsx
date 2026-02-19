@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Metadata } from "next";
+// app/admin/page.tsx
+import { redirect } from "next/navigation";
+
 
 
 
@@ -33,6 +36,7 @@ function money(n: number) {
 }
 
 export default function ClassifiedsPage() {
+    
     const [items, setItems] = useState<Classified[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
