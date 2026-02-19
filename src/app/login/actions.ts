@@ -10,9 +10,7 @@ export async function loginAction(formData: FormData): Promise<void> {
   const supabase = await supabaseServer();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  }
+  if (error) redirect("/login"); // no query string
 
   redirect("/admin");
 }
