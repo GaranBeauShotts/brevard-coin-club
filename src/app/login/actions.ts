@@ -8,9 +8,34 @@ export async function loginAction(formData: FormData): Promise<void> {
   const password = String(formData.get("password") || "");
 
   const supabase = await supabaseServer();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) redirect("/login"); // no query string
+  // 1️⃣ Authenticate
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-  redirect("/admin");
+  if (error || !data.user) {
+    redirect(`/login?error=${encodeURIComponent(error?.message || "Login failed")}`);
+  }
+
+  const userId = data.user.id;
+
+  // 2️⃣ Get profile
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .single();
+
+  if (profileError || !profile) {
+    redirect("/account"); // fallback safely
+  }
+
+  // 3️⃣ Redirect based on role
+  if (profile.role === "admin") {
+    redirect("/admin");
+  }
+
+  redirect("/account");
 }
