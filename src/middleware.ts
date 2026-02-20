@@ -21,8 +21,8 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  // Refresh auth session for SSR
-  await supabase.auth.getUser();
+  // ✅ Refresh/propagate auth session cookie for SSR
+  await supabase.auth.getSession();
 
   return res;
 }

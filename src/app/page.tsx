@@ -4,6 +4,8 @@ import FeatureCard from "@/components/FeatureCardd";
 import SiteHeader from "@/components/SiteHeader";
 import MetalsTicker from "@/components/MetalsTicker";
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 
 export const metadata: Metadata = {
   title: "Classifieds",

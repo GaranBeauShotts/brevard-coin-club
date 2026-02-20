@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabaseServer";
 
+
 export async function requireAdmin() {
   const supabase = await supabaseServer();
 
