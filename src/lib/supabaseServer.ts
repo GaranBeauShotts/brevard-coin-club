@@ -2,7 +2,6 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function supabaseServer() {
-  // Next (newer versions) returns a Promise here
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -11,11 +10,11 @@ export async function supabaseServer() {
     {
       cookies: {
         getAll() {
-          return (cookieStore as any).getAll();
+          return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            (cookieStore as any).set(name, value, options);
+            cookieStore.set(name, value, options);
           });
         },
       },
