@@ -45,41 +45,39 @@ export default function JoinPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl p-6 text-white">
-      <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
-        <h1 className="text-3xl font-bold">Join the Club</h1>
-        <BackToHome />
+  <main className="mx-auto max-w-3xl p-6 text-white min-h-screen">
+  <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+    <h1 className="text-3xl font-bold">About South Brevard Coin Club</h1>
+    <BackToHome />
+  </div>
+
+  <p className="mt-2 text-white/70">
+    ...
+  </p>
+
+  {/* ✅ Stack sections with guaranteed spacing */}
+  <section className="mt-8 space-y-6">
+    {/* Membership card */}
+    <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-6">
+      <div className="text-sm uppercase tracking-wide text-yellow-300">
+        Membership
       </div>
 
-      <p className="mt-2 text-white/70">
-        Interested in joining the Brevard Coin Club? Fill out the form below and we’ll review your request.
+      <div className="mt-2 text-3xl font-bold text-white">
+        $30 <span className="text-lg font-medium text-white/70">/ year</span>
+      </div>
+
+      <p className="mt-3 text-sm text-white/80">
+        Membership includes access to club meetings, special events, community classifieds,
+        and updates throughout the year.
       </p>
-      <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6">
-        <h2 className="text-xl font-semibold mb-3">Member Benefits</h2>
-        <ul className="space-y-2 text-white/80 text-sm">
-          <li>• Post and manage classified listings</li>
-          <li>• Access private member-only content</li>
-          <li>• Receive club newsletters</li>
-          <li>• Early access to events and auctions</li>
-        </ul>
-      </div>
-      <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-6">
-        <div className="text-sm uppercase tracking-wide text-yellow-300">
-          Membership
-        </div>
+    </div>
 
-        <div className="mt-2 text-3xl font-bold text-white">
-          $30 <span className="text-lg font-medium text-white/70">/ year</span>
-        </div>
+    {/* ✅ Form card */}
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 className="text-xl font-semibold mb-4">Join Request</h2>
 
-        <p className="mt-3 text-sm text-white/80">
-          Membership includes access to club meetings, special events, community classifieds,
-          and updates throughout the year.
-        </p>
-      </div>
-
-
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium">Full Name</label>
           <input
@@ -121,6 +119,7 @@ export default function JoinPage() {
         >
           {status === "loading" ? "Submitting..." : "Submit"}
         </button>
+
         {status === "success" && (
           <div className="mt-4 rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-green-300">
             ✅ Application received! A club admin will review your request.
@@ -132,9 +131,7 @@ export default function JoinPage() {
             Something went wrong. Please try again.
           </div>
         )}
-
-
       </form>
-    </main>
-  );
-}
+    </div>
+  </section>
+</main>
