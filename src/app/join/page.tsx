@@ -47,7 +47,7 @@ export default function JoinPage() {
   return (
   <main className="mx-auto max-w-3xl p-6 text-white min-h-screen">
   <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
-    <h1 className="text-3xl font-bold">About South Brevard Coin Club</h1>
+    <h1 className="text-3xl font-bold">Join The Club</h1>
     <BackToHome />
   </div>
 
