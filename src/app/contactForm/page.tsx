@@ -48,9 +48,13 @@ export default function ContactPage() {
     <main className="mx-auto max-w-3xl px-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Contact the Club</h1>
-        <Link href="/" className="text-sm text-white/70 hover:text-white">
+        <Link
+          href="/"
+          className="h-9 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 transition"
+        >
           ← Back to Home
         </Link>
+
       </div>
 
       <p className="mt-2 max-w-2xl text-sm text-white/70">
