@@ -4,18 +4,23 @@ import { supabaseServer } from "@/lib/supabaseServer";
 export async function requireAdmin() {
   const supabase = await supabaseServer();
 
-  const { data: auth, error: authError } = await supabase.auth.getUser();
-  const user = auth?.user;
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const user = authData?.user;
 
-  if (authError || !user) redirect("/login");
+  if (authError || !user) {
+    redirect("/login");
+  }
 
-  const { data: adminRow, error: adminError } = await supabase
-    .from("admin_users")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  // 🔥 Check role from profiles table instead
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
 
-  if (adminError || !adminRow) redirect("/");
+  if (profileError || !profile || profile.role !== "admin") {
+    redirect("/");
+  }
 
   return { supabase, user };
 }
