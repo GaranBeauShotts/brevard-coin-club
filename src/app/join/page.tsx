@@ -63,11 +63,20 @@ export default function JoinPage() {
           <li>• Early access to events and auctions</li>
         </ul>
       </div>
-       <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-6">
-                <div className="text-sm uppercase tracking-wide text-yellow-300">
-                    Membership
-                </div>
-    </div>
+      <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-6">
+        <div className="text-sm uppercase tracking-wide text-yellow-300">
+          Membership
+        </div>
+
+        <div className="mt-2 text-3xl font-bold text-white">
+          $30 <span className="text-lg font-medium text-white/70">/ year</span>
+        </div>
+
+        <p className="mt-3 text-sm text-white/80">
+          Membership includes access to club meetings, special events, community classifieds,
+          and updates throughout the year.
+        </p>
+      </div>
 
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
